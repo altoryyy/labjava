@@ -1,4 +1,4 @@
-package RecipeService;
+package recipeservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +8,9 @@ class RecipeServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
+		//ывфывфыв
+
+		//dsfsadf
 	}
 
 }

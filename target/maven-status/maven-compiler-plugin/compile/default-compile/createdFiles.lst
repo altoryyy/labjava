@@ -1,0 +1,6 @@
+recipeservice/model/Recipe.class
+recipeservice/RecipeServiceApplication.class
+recipeservice/service/RecipeService.class
+recipeservice/dao/RecipeDao.class
+recipeservice/dao/RecipeDaoImpl.class
+recipeservice/controller/RecipeController.class

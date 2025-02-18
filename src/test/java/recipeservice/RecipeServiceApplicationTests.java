@@ -9,8 +9,6 @@ class RecipeServiceApplicationTests {
 	@Test
 	void contextLoads() {
 		//ывфывфыв
-
-		//dsfsadf
 	}
 
 }

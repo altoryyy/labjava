@@ -1,6 +1,8 @@
 package recipeservice.controller;
 
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +22,13 @@ public class RecipeController {
     }
 
     @GetMapping("/cuisine/{cuisine}")
-    public List<Recipe> getRecipesByCuisine(@PathVariable String cuisine) {
-        return recipeService.getRecipesByCuisine(cuisine);
+    public ResponseEntity<List<Recipe>> getRecipesByCuisine(@PathVariable String cuisine) {
+        List<Recipe> recipes = recipeService.getRecipesByCuisine(cuisine);
+        if (recipes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null); // Возвращаем 404, если нет рецептов
+        }
+        return ResponseEntity.ok(recipes);
     }
 
     @GetMapping
@@ -30,7 +37,12 @@ public class RecipeController {
     }
 
     @GetMapping(params = "name")
-    public List<Recipe> getRecipesByName(@RequestParam String name) {
-        return recipeService.getRecipesByName(name);
+    public ResponseEntity<List<Recipe>> getRecipesByName(@RequestParam String name) {
+        List<Recipe> recipes = recipeService.getRecipesByName(name);
+        if (recipes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null); // Возвращаем 404, если нет рецептов
+        }
+        return ResponseEntity.ok(recipes);
     }
 }

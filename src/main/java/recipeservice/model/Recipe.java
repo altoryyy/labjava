@@ -5,7 +5,6 @@ public class Recipe {
     private final String name;
     private final String cuisine;
 
-    // Конструкторы, геттеры и сеттеры
     public Recipe(Long id, String name, String cuisine) {
         this.id = id;
         this.name = name;

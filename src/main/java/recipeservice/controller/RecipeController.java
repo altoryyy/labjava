@@ -10,7 +10,7 @@ import recipeservice.model.Recipe;
 import recipeservice.service.RecipeService;
 
 @RestController
-@RequestMapping("/api/recipes")
+@RequestMapping("/recipes")
 public class RecipeController {
 
     private final RecipeService recipeService;
@@ -29,7 +29,7 @@ public class RecipeController {
         return recipeService.getAllRecipes();
     }
 
-    @GetMapping(params = "name") // Обрабатываем запросы с параметром name
+    @GetMapping(params = "name")
     public List<Recipe> getRecipesByName(@RequestParam String name) {
         return recipeService.getRecipesByName(name);
     }

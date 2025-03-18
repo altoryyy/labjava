@@ -4,9 +4,13 @@ import java.util.List;
 import recipeservice.model.Recipe;
 
 public interface RecipeDao {
-    List<Recipe> findByCuisine(String cuisine);
+    List<Recipe> getAllRecipes();
 
-    List<Recipe> findAll();
+    Recipe getRecipeById(Long id);
 
-    List<Recipe> findByName(String name);
+    Recipe createRecipe(Recipe recipe);
+
+    Recipe updateRecipe(Long id, Recipe recipe);
+
+    void deleteRecipe(Long id);
 }

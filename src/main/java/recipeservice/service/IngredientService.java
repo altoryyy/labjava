@@ -20,7 +20,7 @@ public class IngredientService {
         List<Ingredient> ingredients = ingredientDao.getAllIngredients();
         return ingredients.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public IngredientDto getIngredientById(Long id) {

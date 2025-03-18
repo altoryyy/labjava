@@ -24,7 +24,7 @@ public class ReviewService {
                         review.getText(),
                         review.getRating(),
                         review.getRecipe().getId()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public ReviewDto getReviewById(Long id) {

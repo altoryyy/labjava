@@ -30,7 +30,7 @@ public class RecipeService {
                                             -> new IngredientDto(
                                                     ingredient.getId(),
                                                     ingredient.getName()))
-                                    .collect(Collectors.toList()) : List.of();
+                                    .toList() : List.of();
 
                     List<ReviewDto> reviewDtos = (recipe.getReviews() != null)
                             ? recipe.getReviews().stream()
@@ -39,7 +39,7 @@ public class RecipeService {
                                             review.getText(),
                                             review.getRating(),
                                             recipe.getId()))
-                                    .collect(Collectors.toList()) : List.of();
+                                    .toList() : List.of();
 
                     return new RecipeDto(
                             recipe.getId(),
@@ -48,7 +48,7 @@ public class RecipeService {
                             ingredientDtos,
                             reviewDtos);
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public RecipeDto getRecipeById(Long id) {
@@ -79,14 +79,14 @@ public class RecipeService {
                         .map(ingredient -> new IngredientDto(
                                 ingredient.getId(),
                                 ingredient.getName()))
-                        .collect(Collectors.toList()) : List.of();
+                        .toList() : List.of();
 
         List<ReviewDto> reviewDtos = (recipe.getReviews() != null)
                 ? recipe.getReviews().stream()
                         .map(review -> new ReviewDto(review.getId(),
                                 review.getText(), review.getRating(),
                                 recipe.getId()))
-                        .collect(Collectors.toList()) : List.of();
+                        .toList() : List.of();
 
         return new RecipeDto(
                 recipe.getId(),
@@ -109,7 +109,7 @@ public class RecipeService {
                             ingredient.setId(ingredientDto.getId());
                             return ingredient;
                         })
-                        .collect(Collectors.toList()) : List.of();
+                        .toList() : List.of();
 
         recipe.setIngredients(ingredients);
         return recipe;

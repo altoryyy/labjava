@@ -6,7 +6,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class RecipeServiceApplicationTests {
+class RecipeServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

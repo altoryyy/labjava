@@ -11,6 +11,8 @@ public class RecipeServiceApplicationTests {
 	@Test
 	void contextLoads() {
 		//sssss
+		//ыфвфыавы
+		//ываыфваы
 	}
 
 }

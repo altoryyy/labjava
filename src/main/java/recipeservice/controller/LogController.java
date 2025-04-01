@@ -14,7 +14,7 @@ public class LogController {
 
     @GetMapping("/download")
     public byte[] downloadLogFile(@RequestParam String date) throws IOException {
-        String logFilePath = "/Users/artemlopatin/RecipeService/logs/app.log";
+        String logFilePath = " ";
         return Files.readAllBytes(Paths.get(logFilePath));
     }
 }

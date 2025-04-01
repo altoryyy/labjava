@@ -13,7 +13,6 @@ public class Ingredient {
 
     private String name;
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -22,8 +21,6 @@ public class Ingredient {
         return name;
     }
 
-
-    // Setters
     public void setId(Long id) {
         this.id = id;
     }

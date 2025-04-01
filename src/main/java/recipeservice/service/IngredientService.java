@@ -1,18 +1,23 @@
 package recipeservice.service;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import recipeservice.dao.IngredientDao;
+import recipeservice.dao.RecipeDao;
 import recipeservice.dto.IngredientDto;
 import recipeservice.model.Ingredient;
+import recipeservice.model.Recipe;
 
 @Service
 public class IngredientService {
 
     private final IngredientDao ingredientDao;
+    private final RecipeDao recipeDao;
 
-    public IngredientService(IngredientDao ingredientDao) {
+    public IngredientService(IngredientDao ingredientDao, RecipeDao recipeDao) {
         this.ingredientDao = ingredientDao;
+        this.recipeDao = recipeDao;
     }
 
     public List<IngredientDto> getAllIngredients() {
@@ -40,16 +45,19 @@ public class IngredientService {
         return updatedIngredient != null ? convertToDto(updatedIngredient) : null;
     }
 
+    @Transactional
     public void deleteIngredient(Long id) {
+        List<Recipe> recipes = recipeDao.findRecipesByIngredientId(id);
+        for (Recipe recipe : recipes) {
+            recipe.getIngredients().removeIf(ingredient -> ingredient.getId().equals(id));
+        }
         ingredientDao.deleteIngredient(id);
     }
 
-    // Преобразование Ingredient в IngredientDto
     private IngredientDto convertToDto(Ingredient ingredient) {
         return new IngredientDto(ingredient.getId(), ingredient.getName());
     }
 
-    // Преобразование IngredientDto в Ingredient
     private Ingredient convertToEntity(IngredientDto ingredientDto) {
         Ingredient ingredient = new Ingredient();
         ingredient.setName(ingredientDto.getName());

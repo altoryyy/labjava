@@ -1,10 +1,11 @@
-package recipeservice.dao;
+package recipeservice.dao.impl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import org.springframework.stereotype.Repository;
+import recipeservice.dao.IngredientDao;
 import recipeservice.model.Ingredient;
 
 @Repository

@@ -57,6 +57,10 @@ public class Recipe {
         return reviews;
     }
 
+    public Cuisine getCuisine() { // Геттер для кухни
+        return cuisine;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -71,5 +75,9 @@ public class Recipe {
 
     public void setIngredients(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public void setCuisine(Cuisine cuisine) {
+        this.cuisine = cuisine;
     }
 }

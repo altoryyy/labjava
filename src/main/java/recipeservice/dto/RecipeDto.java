@@ -8,17 +8,20 @@ public class RecipeDto {
     private final String description;
     private final List<IngredientDto> ingredients;
     private final List<ReviewDto> reviews;
+    private final CuisineDto cuisine;
 
     public RecipeDto(
             Long id, String title,
             String description,
             List<IngredientDto> ingredients,
-            List<ReviewDto> reviews) {
+            List<ReviewDto> reviews,
+            CuisineDto cuisine) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.ingredients = ingredients;
         this.reviews = reviews;
+        this.cuisine = cuisine;
     }
 
     public Long getId() {
@@ -39,5 +42,9 @@ public class RecipeDto {
 
     public List<ReviewDto> getReviews() {
         return reviews;
+    }
+
+    public CuisineDto getCuisine() {
+        return cuisine;
     }
 }

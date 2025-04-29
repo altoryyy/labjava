@@ -40,4 +40,16 @@ public class Review {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
+    }
 }

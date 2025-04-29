@@ -19,9 +19,9 @@ public interface RecipeDao {
 
     void deleteRecipe(Long id);
 
-    @Query("SELECT r FROM Recipe r WHERE r.cuisine.id = :cuisineId")
-    List<Recipe> findRecipesByCuisineIdJpql(@Param("cuisineId") Long cuisineId);
+    @Query("SELECT r FROM Recipe r JOIN r.cuisine c WHERE c.name = :cuisineName")
+    List<Recipe> findRecipesByCuisineNameJpql(@Param("cuisineName") String cuisineName);
 
-    @Query(value = "SELECT * FROM recipe r WHERE r.cuisine_id = :cuisineId", nativeQuery = true)
-    List<Recipe> findRecipesByCuisineIdNative(@Param("cuisineId") Long cuisineId);
+    @Query(value = "SELECT r.* FROM recipe r JOIN cuisine c ON r.cuisine_id = c.id WHERE c.name = :cuisineName", nativeQuery = true)
+    List<Recipe> findRecipesByCuisineNameNative(@Param("cuisineName") String cuisineName);
 }

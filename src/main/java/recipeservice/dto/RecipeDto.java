@@ -1,13 +1,21 @@
 package recipeservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public class RecipeDto {
+    @NotBlank(message = "Айди не может быть пустым")
     private final Long id;
+    @NotBlank(message = "Заголовок не может быть пустым")
     private final String title;
+    @NotBlank(message = "Описание не может быть пустым")
     private final String description;
+    @NotBlank(message = "Рецепты не могут быть пустыми")
     private final List<IngredientDto> ingredients;
+    @NotBlank(message = "Отзывы не могут быть пыстыми")
     private final List<ReviewDto> reviews;
+    @NotNull(message = "Кухня не может быть пустой")
     private final CuisineDto cuisine;
 
     public RecipeDto(

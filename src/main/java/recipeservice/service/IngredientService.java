@@ -33,14 +33,20 @@ public class IngredientService {
     }
 
     public IngredientDto createIngredient(IngredientDto ingredientDto) {
+        if (ingredientDto == null) {
+            return null;
+        }
         Ingredient ingredient = convertToEntity(ingredientDto);
         Ingredient createdIngredient = ingredientDao.createIngredient(ingredient);
         return convertToDto(createdIngredient);
     }
 
     public IngredientDto updateIngredient(Long id, IngredientDto ingredientDto) {
+        if (ingredientDto == null) {
+            return null;
+        }
         Ingredient ingredient = convertToEntity(ingredientDto);
-        ingredient.setId(id); // Установите id для обновления
+        ingredient.setId(id);
         Ingredient updatedIngredient = ingredientDao.updateIngredient(id, ingredient);
         return updatedIngredient != null ? convertToDto(updatedIngredient) : null;
     }
@@ -49,7 +55,10 @@ public class IngredientService {
     public void deleteIngredient(Long id) {
         List<Recipe> recipes = recipeDao.findRecipesByIngredientId(id);
         for (Recipe recipe : recipes) {
-            recipe.getIngredients().removeIf(ingredient -> ingredient.getId().equals(id));
+            List<Ingredient> ingredients = recipe.getIngredients();
+            if (ingredients != null) {
+                ingredients.removeIf(ingredient -> ingredient.getId().equals(id));
+            }
         }
         ingredientDao.deleteIngredient(id);
     }

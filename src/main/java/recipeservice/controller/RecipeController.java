@@ -28,7 +28,8 @@ public class RecipeController {
     }
 
     @GetMapping
-    @Operation(summary = "Получить все рецепты")
+    @Operation(summary = "Получить все рецепты",
+            description = "Возвращает список всех рецептов в системе.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Успешно получены все рецепты"),
         @ApiResponse(responseCode = "500", description = "Ошибка сервера")
@@ -38,7 +39,8 @@ public class RecipeController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Получить рецепт по ID")
+    @Operation(summary = "Получить рецепт по ID",
+            description = "Возвращает рецепт с указанным ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Рецепт найден"),
         @ApiResponse(responseCode = "404", description = "Рецепт не найден")
@@ -49,7 +51,8 @@ public class RecipeController {
     }
 
     @PostMapping
-    @Operation(summary = "Создать новый рецепт")
+    @Operation(summary = "Создать новый рецепт",
+            description = "Создает новый рецепт с заданными параметрами.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Рецепт успешно создан"),
         @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных")
@@ -65,15 +68,15 @@ public class RecipeController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Обновить рецепт по ID")
+    @Operation(summary = "Обновить рецепт по ID",
+            description = "Обновляет существующий рецепт с указанным ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Рецепт успешно обновлен"),
         @ApiResponse(responseCode = "404", description = "Рецепт не найден"),
         @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных")
     })
-    public ResponseEntity<RecipeDto> updateRecipe(
-            @PathVariable Long id,
-            @RequestBody RecipeDto recipeDto) {
+    public ResponseEntity<RecipeDto> updateRecipe(@PathVariable Long id,
+                                                  @RequestBody RecipeDto recipeDto) {
         if (recipeDto == null
                 || recipeDto.getTitle() == null
                 || recipeDto.getDescription() == null) {
@@ -81,12 +84,12 @@ public class RecipeController {
         }
         RecipeDto updatedRecipe = recipeService.updateRecipe(id, recipeDto);
         return updatedRecipe != null
-                ? ResponseEntity.ok(updatedRecipe)
-                : ResponseEntity.notFound().build();
+                ? ResponseEntity.ok(updatedRecipe) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Удалить рецепт по ID")
+    @Operation(summary = "Удалить рецепт по ID",
+            description = "Удаляет рецепт с указанным ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Рецепт успешно удален"),
         @ApiResponse(responseCode = "404", description = "Рецепт не найден")
@@ -96,15 +99,40 @@ public class RecipeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/cuisine/{cuisineId}")
-    @Operation(summary = "Получить рецепты по ID кухни")
+    @GetMapping("/cuisine/{cuisineName}")
+    @Operation(summary = "Получить рецепты по названию кухни",
+            description = "Возвращает список рецептов для указанной кухни.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",
                 description = "Успешно получены рецепты для указанной кухни"),
         @ApiResponse(responseCode = "404",
                 description = "Кухня не найдена")
     })
-    public List<RecipeDto> getRecipesByCuisineId(@PathVariable Long cuisineId) {
-        return recipeService.getRecipesByCuisineId(cuisineId);
+    public List<RecipeDto> getRecipesByCuisineName(@PathVariable String cuisineName) {
+        return recipeService.getRecipesByCuisineName(cuisineName);
+    }
+
+    @PostMapping("/bulk")
+    @Operation(summary = "Создать несколько рецептов",
+            description = "Создает несколько рецептов с заданными параметрами.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Рецепты успешно созданы"),
+        @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных")
+    })
+    public ResponseEntity<List<RecipeDto>> createRecipes(@RequestBody List<RecipeDto> recipeDtos) {
+        if (recipeDtos == null || recipeDtos.isEmpty()) {
+            throw new CustomException("Список рецептов не может быть пустым");
+        }
+
+        List<RecipeDto> createdRecipes = recipeDtos.stream()
+                .map(recipeDto -> {
+                    if (recipeDto.getTitle() == null || recipeDto.getDescription() == null) {
+                        throw new CustomException("Название и описание не могут быть пустыми");
+                    }
+                    return recipeService.createRecipe(recipeDto);
+                })
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdRecipes);
     }
 }

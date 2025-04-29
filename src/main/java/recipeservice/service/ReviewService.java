@@ -49,3 +49,5 @@ public class ReviewService {
         reviewDao.deleteReview(id);
     }
 }
+
+// /Library/PostgreSQL/17/bin/postgres -D /Library/PostgreSQL/17/data

@@ -53,26 +53,22 @@ public class RecipeDaoImpl implements RecipeDao {
                 .getResultList();
     }
 
-    //jpql
-
     @Override
-    public List<Recipe> findRecipesByCuisineIdJpql(Long cuisineId) {
+    public List<Recipe> findRecipesByCuisineNameJpql(String cuisineName) {
         return entityManager.createQuery(
-                "SELECT r FROM Recipe r WHERE r.cuisine.id = :cuisineId",
+                        "SELECT r FROM Recipe r WHERE r.cuisine.name = :cuisineName",
                         Recipe.class)
-                .setParameter("cuisineId", cuisineId)
+                .setParameter("cuisineName", cuisineName)
                 .getResultList();
     }
 
-    //native
-
     @Override
     @SuppressWarnings("unchecked")
-    public List<Recipe> findRecipesByCuisineIdNative(Long cuisineId) {
+    public List<Recipe> findRecipesByCuisineNameNative(String cuisineName) {
         return entityManager.createNativeQuery(
-                "SELECT r.* FROM recipe r WHERE r.cuisine_id = :cuisineId",
+                        "SELECT r.* FROM recipe r JOIN cuisine c ON r.cuisine_id = c.id WHERE c.name = :cuisineName",
                         Recipe.class)
-                .setParameter("cuisineId", cuisineId)
+                .setParameter("cuisineName", cuisineName)
                 .getResultList();
     }
 }

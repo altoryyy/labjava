@@ -10,6 +10,7 @@ import recipeservice.dto.ReviewDto;
 import recipeservice.model.Cuisine;
 import recipeservice.model.Ingredient;
 import recipeservice.model.Recipe;
+import recipeservice.exception.CustomException;
 
 @Service
 public class RecipeService {
@@ -41,11 +42,10 @@ public class RecipeService {
                                             recipe.getId()))
                             .toList() : List.of();
 
-                    // Проверка на null для cuisine
                     Cuisine cuisine = recipe.getCuisine();
                     CuisineDto cuisineDto = (cuisine != null)
                             ? new CuisineDto(cuisine.getId(), cuisine.getName())
-                            : null; // Или можно создать CuisineDto с пустыми значениями
+                            : null;
 
                     return new RecipeDto(
                             recipe.getId(),
@@ -53,7 +53,7 @@ public class RecipeService {
                             recipe.getDescription(),
                             ingredientDtos,
                             reviewDtos,
-                            cuisineDto // Передаем CuisineDto
+                            cuisineDto
                     );
                 })
                 .toList();
@@ -65,20 +65,43 @@ public class RecipeService {
     }
 
     public RecipeDto createRecipe(RecipeDto recipeDto) {
+        if (recipeDto == null || recipeDto.getTitle() == null || recipeDto.getDescription() == null) {
+            throw new CustomException("Название и описание не могут быть пустыми");
+        }
+
         Recipe recipe = convertToEntity(recipeDto);
         Recipe createdRecipe = recipeDao.createRecipe(recipe);
+
+        if (createdRecipe != null && createdRecipe.getCuisine() != null) {
+            String cacheKey = createdRecipe.getCuisine().getName();
+            if (cacheKey != null) {
+                cacheService.updateCache(cacheKey, convertToDto(createdRecipe));
+            }
+        }
+
         return convertToDto(createdRecipe);
     }
 
     public RecipeDto updateRecipe(Long id, RecipeDto recipeDto) {
+        Recipe existingRecipe = recipeDao.getRecipeById(id);
+        if (existingRecipe == null) {
+            return null;
+        }
+
         Recipe recipe = convertToEntity(recipeDto);
         recipe.setId(id);
         Recipe updatedRecipe = recipeDao.updateRecipe(id, recipe);
-        return updatedRecipe != null ? convertToDto(updatedRecipe) : null;
+        return convertToDto(updatedRecipe);
     }
 
     public void deleteRecipe(Long id) {
-        recipeDao.deleteRecipe(id);
+        Recipe recipe = recipeDao.getRecipeById(id);
+        if (recipe != null) {
+            String cacheKey = recipe.getCuisine().getName();
+
+            recipeDao.deleteRecipe(id);
+            cacheService.removeCachedRecipes(cacheKey);
+        }
     }
 
     private RecipeDto convertToDto(Recipe recipe) {
@@ -98,11 +121,10 @@ public class RecipeService {
                         recipe.getId()))
                 .toList() : List.of();
 
-        // Проверка на null для cuisine
         Cuisine cuisine = recipe.getCuisine();
         CuisineDto cuisineDto = (cuisine != null)
                 ? new CuisineDto(cuisine.getId(), cuisine.getName())
-                : null; // Или можно создать CuisineDto с пустыми значениями
+                : null;
 
         return new RecipeDto(
                 recipe.getId(),
@@ -110,7 +132,7 @@ public class RecipeService {
                 recipe.getDescription(),
                 ingredientDtos,
                 reviewDtos,
-                cuisineDto // Передаем CuisineDto
+                cuisineDto
         );
     }
 
@@ -138,19 +160,22 @@ public class RecipeService {
         return recipe;
     }
 
-    public List<RecipeDto> getRecipesByCuisineId(Long cuisineId) {
-        List<RecipeDto> cachedRecipes = cacheService.getCachedRecipes(cuisineId.toString());
+    public List<RecipeDto> getRecipesByCuisineName(String cuisineName) {
+        List<RecipeDto> cachedRecipes = cacheService.getCachedRecipes(cuisineName);
         if (cachedRecipes != null) {
             return cachedRecipes;
         }
 
-        List<Recipe> recipes = recipeDao.findRecipesByCuisineIdJpql(cuisineId);
+        List<Recipe> recipes = recipeDao.findRecipesByCuisineNameJpql(cuisineName);
         if (recipes.isEmpty()) {
-            recipes = recipeDao.findRecipesByCuisineIdNative(cuisineId);
+            recipes = recipeDao.findRecipesByCuisineNameNative(cuisineName);
         }
 
         List<RecipeDto> recipeDtos = recipes.stream().map(this::convertToDto).toList();
-        cacheService.cacheRecipes(cuisineId.toString(), recipeDtos);
+
+        if (!recipeDtos.isEmpty()) {
+            cacheService.cacheRecipes(cuisineName, recipeDtos);
+        }
 
         return recipeDtos;
     }

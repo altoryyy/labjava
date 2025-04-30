@@ -441,4 +441,155 @@ public class RecipeServiceTest {
         assertNull(updatedRecipe);
         verify(recipeDao, never()).updateRecipe(any(), any());
     }
+
+    @Test
+    public void testUpdateRecipe_CuisineDtoIsNull() {
+        Long recipeId = 1L;
+        RecipeDto recipeDto = new RecipeDto(recipeId, "Updated Title", "Updated Description", new ArrayList<>(), new ArrayList<>(), null);
+
+        Recipe existingRecipe = new Recipe();
+        existingRecipe.setId(recipeId);
+        existingRecipe.setTitle("Original Title");
+        existingRecipe.setDescription("Original Description");
+        Cuisine cuisine = new Cuisine();
+        cuisine.setId(1L);
+        existingRecipe.setCuisine(cuisine);
+
+        Recipe updatedRecipe = new Recipe();
+        updatedRecipe.setId(recipeId);
+        updatedRecipe.setTitle("Updated Title");
+        updatedRecipe.setDescription("Updated Description");
+        updatedRecipe.setCuisine(null);
+
+        when(recipeDao.getRecipeById(recipeId)).thenReturn(existingRecipe);
+        when(recipeDao.updateRecipe(eq(recipeId), any(Recipe.class))).thenReturn(updatedRecipe);
+
+        RecipeDto updatedRecipeDto = recipeService.updateRecipe(recipeId, recipeDto);
+
+        assertNotNull(updatedRecipeDto);
+        assertEquals(recipeId, updatedRecipeDto.getId());
+        assertEquals("Updated Title", updatedRecipeDto.getTitle());
+        assertEquals("Updated Description", updatedRecipeDto.getDescription());
+        assertNull(updatedRecipeDto.getCuisine());
+
+        verify(recipeDao, times(1)).getRecipeById(recipeId);
+        verify(recipeDao, times(1)).updateRecipe(eq(recipeId), any(Recipe.class));
+    }
+
+    @Test
+    public void testUpdateRecipe_WithNullCuisineDto_ExistingCuisineNotNull() {
+        Long recipeId = 1L;
+        RecipeDto recipeDto = new RecipeDto(recipeId, "Updated Title", "Updated Description", new ArrayList<>(), new ArrayList<>(), null);
+
+        Recipe existingRecipe = new Recipe();
+        existingRecipe.setId(recipeId);
+        existingRecipe.setTitle("Original Title");
+        existingRecipe.setDescription("Original Description");
+        Cuisine cuisine = new Cuisine();
+        cuisine.setId(1L);
+        cuisine.setName("Existing Cuisine");
+        existingRecipe.setCuisine(cuisine);
+
+        Recipe updatedRecipe = new Recipe();
+        updatedRecipe.setId(recipeId);
+        updatedRecipe.setTitle("Updated Title");
+        updatedRecipe.setDescription("Updated Description");
+
+        when(recipeDao.getRecipeById(recipeId)).thenReturn(existingRecipe);
+        when(recipeDao.updateRecipe(eq(recipeId), any(Recipe.class))).thenReturn(updatedRecipe);
+
+        RecipeDto updatedRecipeDto = recipeService.updateRecipe(recipeId, recipeDto);
+
+        assertNotNull(updatedRecipeDto);
+        assertEquals(recipeId, updatedRecipeDto.getId());
+        assertEquals("Updated Title", updatedRecipeDto.getTitle());
+        assertEquals("Updated Description", updatedRecipeDto.getDescription());
+        assertNull(updatedRecipeDto.getCuisine());
+
+        verify(recipeDao, times(1)).getRecipeById(recipeId);
+        verify(recipeDao, times(1)).updateRecipe(eq(recipeId), any(Recipe.class));
+    }
+
+    @Test
+    public void testGetAllRecipes_EmptyList() {
+        when(recipeDao.getAllRecipes()).thenReturn(new ArrayList<>());
+
+        List<RecipeDto> recipeDtos = recipeService.getAllRecipes();
+
+        assertNotNull(recipeDtos);
+        assertTrue(recipeDtos.isEmpty());
+    }
+
+    @Test
+    public void testCreateRecipe_WithNullCuisineAndNullIngredients() {
+        RecipeDto recipeDto = new RecipeDto(1L, "Test Recipe", "Description", null, null, null);
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+
+        when(recipeDao.createRecipe(any())).thenReturn(recipe);
+        doNothing().when(cacheService).updateCache(any(), any());
+
+        RecipeDto createdRecipe = recipeService.createRecipe(recipeDto);
+
+        assertNotNull(createdRecipe);
+        assertEquals(recipe.getId(), createdRecipe.getId());
+        verify(recipeDao, times(1)).createRecipe(any());
+        assertTrue(createdRecipe.getIngredients().isEmpty());
+        assertNull(createdRecipe.getCuisine());
+    }
+
+    @Test
+    public void testGetAllRecipes_WithNullIngredientsReviewsAndCuisine() {
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        recipe.setTitle("Test Recipe");
+        recipe.setDescription("Description");
+        recipe.setIngredients(null);
+        recipe.setReviews(null);
+        recipe.setCuisine(null);
+
+        List<Recipe> recipes = List.of(recipe);
+        when(recipeDao.getAllRecipes()).thenReturn(recipes);
+
+        List<RecipeDto> recipeDtos = recipeService.getAllRecipes();
+
+        assertNotNull(recipeDtos);
+        assertEquals(1, recipeDtos.size());
+
+        RecipeDto recipeDto = recipeDtos.get(0);
+        assertNotNull(recipeDto);
+        assertEquals(1L, recipeDto.getId());
+        assertEquals("Test Recipe", recipeDto.getTitle());
+        assertEquals("Description", recipeDto.getDescription());
+        assertNotNull(recipeDto.getIngredients());
+        assertTrue(recipeDto.getIngredients().isEmpty());
+        assertNotNull(recipeDto.getReviews());
+        assertTrue(recipeDto.getReviews().isEmpty());
+        assertNull(recipeDto.getCuisine());
+    }
+
+    @Test
+    public void testGetRecipeById_WithNullIngredientsReviewsAndCuisine() {
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        recipe.setTitle("Test Recipe");
+        recipe.setDescription("Description");
+        recipe.setIngredients(null);
+        recipe.setReviews(null);
+        recipe.setCuisine(null);
+
+        when(recipeDao.getRecipeById(1L)).thenReturn(recipe);
+
+        RecipeDto recipeDto = recipeService.getRecipeById(1L);
+
+        assertNotNull(recipeDto);
+        assertEquals(1L, recipeDto.getId());
+        assertEquals("Test Recipe", recipeDto.getTitle());
+        assertEquals("Description", recipeDto.getDescription());
+        assertNotNull(recipeDto.getIngredients());
+        assertTrue(recipeDto.getIngredients().isEmpty());
+        assertNotNull(recipeDto.getReviews());
+        assertTrue(recipeDto.getReviews().isEmpty());
+        assertNull(recipeDto.getCuisine());
+    }
 }

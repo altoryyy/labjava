@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   db:
     image: postgres:latest
@@ -12,13 +11,24 @@ services:
       - my_network
 
   app:
-    image: recipeservice-app
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/RecipeDB
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1234
     ports:
       - "8080:8080"
+    networks:
+      - my_network
+
+  frontend:
+    build:
+      context: ./recipe-service
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
     networks:
       - my_network
 

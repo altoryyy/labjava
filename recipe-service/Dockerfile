@@ -22,7 +22,7 @@ FROM nginx:alpine
 # Копируем собранные файлы в Nginx
 COPY --from=0 /app/build /usr/share/nginx/html
 
-# Открываем порт
+# Открываем порт 80
 EXPOSE 80
 
 # Запускаем Nginx

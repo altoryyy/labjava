@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import recipeservice.dto.RecipeDto;
 import recipeservice.exception.CustomException;
 import recipeservice.service.RecipeService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/recipes")
 public class RecipeController {

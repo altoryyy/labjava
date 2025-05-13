@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: RecipeDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+    networks:
+      - my_network
+
+  app:
+    image: recipeservice-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/RecipeDB
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
+    ports:
+      - "8080:8080"
+    networks:
+      - my_network
+
+networks:
+  my_network:

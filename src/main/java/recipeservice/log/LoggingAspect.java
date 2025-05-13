@@ -1,4 +1,4 @@
-package recipeservice.aspect;
+package recipeservice.log;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;

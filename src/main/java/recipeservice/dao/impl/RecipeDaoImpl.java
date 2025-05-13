@@ -66,7 +66,8 @@ public class RecipeDaoImpl implements RecipeDao {
     @SuppressWarnings("unchecked")
     public List<Recipe> findRecipesByCuisineNameNative(String cuisineName) {
         return entityManager.createNativeQuery(
-                        "SELECT r.* FROM recipe r JOIN cuisine c ON r.cuisine_id = c.id WHERE c.name = :cuisineName",
+                        "SELECT r.* FROM recipe r JOIN cuisine c "
+                                + "ON r.cuisine_id = c.id WHERE c.name = :cuisineName",
                         Recipe.class)
                 .setParameter("cuisineName", cuisineName)
                 .getResultList();

@@ -22,6 +22,9 @@ public interface RecipeDao {
     @Query("SELECT r FROM Recipe r JOIN r.cuisine c WHERE c.name = :cuisineName")
     List<Recipe> findRecipesByCuisineNameJpql(@Param("cuisineName") String cuisineName);
 
-    @Query(value = "SELECT r.* FROM recipe r JOIN cuisine c ON r.cuisine_id = c.id WHERE c.name = :cuisineName", nativeQuery = true)
+    @Query(value =
+            "SELECT r.* FROM recipe r JOIN cuisine c "
+                    + "ON r.cuisine_id = c.id WHERE c.name = :cuisineName",
+            nativeQuery = true)
     List<Recipe> findRecipesByCuisineNameNative(@Param("cuisineName") String cuisineName);
 }

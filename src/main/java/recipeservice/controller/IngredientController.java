@@ -32,7 +32,7 @@ public class IngredientController {
     @Operation(summary = "Получить все ингредиенты",
             description = "Возвращает список всех ингредиентов в системе.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно получены все ингредиенты"),
+        @ApiResponse(responseCode = "200", description = "Успешно получены все ингредиенты"),
     })
     public List<IngredientDto> getAllIngredients() {
         return ingredientService.getAllIngredients();
@@ -42,8 +42,8 @@ public class IngredientController {
     @Operation(summary = "Получить ингредиент по ID",
             description = "Возвращает ингредиент с указанным ID.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Ингредиент найден"),
-            @ApiResponse(responseCode = "404", description = "Ингредиент не найден")
+        @ApiResponse(responseCode = "200", description = "Ингредиент найден"),
+        @ApiResponse(responseCode = "404", description = "Ингредиент не найден")
     })
     public ResponseEntity<IngredientDto> getIngredientById(@PathVariable Long id) {
         IngredientDto ingredient = ingredientService.getIngredientById(id);
@@ -56,10 +56,11 @@ public class IngredientController {
     @Operation(summary = "Создать новый ингредиент",
             description = "Создает новый ингредиент с заданными параметрами.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Ингредиент успешно создан"),
-            @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных")
+        @ApiResponse(responseCode = "201", description = "Ингредиент успешно создан"),
+        @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных")
     })
-    public ResponseEntity<IngredientDto> createIngredient(@RequestBody IngredientDto ingredientDto) {
+    public ResponseEntity<IngredientDto> createIngredient(
+            @RequestBody IngredientDto ingredientDto) {
         validateIngredientDto(ingredientDto);
         IngredientDto createdIngredient = ingredientService.createIngredient(ingredientDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdIngredient);
@@ -69,11 +70,12 @@ public class IngredientController {
     @Operation(summary = "Обновить ингредиент по ID",
             description = "Обновляет существующий ингредиент с указанным ID.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Ингредиент успешно обновлен"),
-            @ApiResponse(responseCode = "404", description = "Ингредиент не найден"),
-            @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных")
+        @ApiResponse(responseCode = "200", description = "Ингредиент успешно обновлен"),
+        @ApiResponse(responseCode = "404", description = "Ингредиент не найден"),
+        @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных")
     })
-    public ResponseEntity<IngredientDto> updateIngredient(@PathVariable Long id, @RequestBody IngredientDto ingredientDto) {
+    public ResponseEntity<IngredientDto> updateIngredient(
+            @PathVariable Long id, @RequestBody IngredientDto ingredientDto) {
         validateIngredientDto(ingredientDto);
         IngredientDto updatedIngredient = ingredientService.updateIngredient(id, ingredientDto);
         return updatedIngredient != null
@@ -85,8 +87,8 @@ public class IngredientController {
     @Operation(summary = "Удалить ингредиент по ID",
             description = "Удаляет ингредиент с указанным ID.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Ингредиент успешно удален"),
-            @ApiResponse(responseCode = "404", description = "Ингредиент не найден")
+        @ApiResponse(responseCode = "204", description = "Ингредиент успешно удален"),
+        @ApiResponse(responseCode = "404", description = "Ингредиент не найден")
     })
     public ResponseEntity<Void> deleteIngredient(@PathVariable Long id) {
         ingredientService.deleteIngredient(id);

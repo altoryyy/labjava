@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import recipeservice.dao.CuisineDao;
-import recipeservice.model.Cuisine;
 import recipeservice.dto.CuisineDto;
+import recipeservice.model.Cuisine;
 
 @Service
 public class CuisineService {

@@ -15,11 +15,6 @@ import org.springframework.stereotype.Component;
 public class VisitCounterFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(VisitCounterFilter.class);
-    private final VisitCounter visitCounter;
-
-    public VisitCounterFilter(VisitCounter visitCounter) {
-        this.visitCounter = visitCounter;
-    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -29,7 +24,6 @@ public class VisitCounterFilter implements Filter {
 
         if (requestUri.equals("/api/visits/visit")) {
             logger.info("Incrementing visit counter for URI: {}", requestUri);
-            // visitCounter.incrementVisit(requestUri);
         }
 
         chain.doFilter(request, response);

@@ -7,10 +7,10 @@ import recipeservice.dto.CuisineDto;
 import recipeservice.dto.IngredientDto;
 import recipeservice.dto.RecipeDto;
 import recipeservice.dto.ReviewDto;
+import recipeservice.exception.CustomException;
 import recipeservice.model.Cuisine;
 import recipeservice.model.Ingredient;
 import recipeservice.model.Recipe;
-import recipeservice.exception.CustomException;
 
 @Service
 public class RecipeService {
@@ -65,7 +65,8 @@ public class RecipeService {
     }
 
     public RecipeDto createRecipe(RecipeDto recipeDto) {
-        if (recipeDto == null || recipeDto.getTitle() == null || recipeDto.getDescription() == null) {
+        if (recipeDto == null || recipeDto.getTitle() == null
+                || recipeDto.getDescription() == null) {
             throw new CustomException("Название и описание не могут быть пустыми");
         }
 

@@ -21,7 +21,7 @@ public class VisitCounterFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String requestUri = httpRequest.getRequestURI();
 
-        if (requestUri.equals("/api/visits/visit")) {
+        if (requestUri.equals("/api/cuisines")) {
             logger.info("Incrementing visit counter for URI: {}", requestUri);
         }
 

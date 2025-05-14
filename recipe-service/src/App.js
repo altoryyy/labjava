@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
-import { Layout, Button, Modal, Input, Select } from 'antd';
+import { Layout, Button, Modal, Input, Select, Spin } from 'antd';
 import RecipeList from './components/RecipeList';
 import { createRecipe, fetchIngredients, fetchCuisines, createIngredient, fetchRecipes } from './api/api';
 
@@ -17,33 +17,26 @@ const App = () => {
     const [newCuisineId, setNewCuisineId] = useState(null);
     const [newIngredientName, setNewIngredientName] = useState('');
     const [recipes, setRecipes] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const loadIngredients = async () => {
+        const loadInitialData = async () => {
             try {
-                const ingredients = await fetchIngredients();
+                setLoading(true);
+                const [ingredients, cuisines] = await Promise.all([
+                    fetchIngredients(),
+                    fetchCuisines()
+                ]);
                 setIngredientOptions(ingredients);
-            } catch (error) {
-                console.error('Ошибка при загрузке ингредиентов:', error);
-            }
-        };
-
-        const loadCuisines = async () => {
-            try {
-                const cuisines = await fetchCuisines();
                 setCuisineOptions(cuisines);
+                await refreshRecipes();
             } catch (error) {
-                console.error('Ошибка при загрузке кухонь:', error);
+                console.error('Ошибка при инициализации:', error);
+            } finally {
+                setLoading(false);
             }
         };
-
-        const loadRecipes = async () => {
-            await refreshRecipes();
-        };
-
-        loadIngredients();
-        loadCuisines();
-        loadRecipes();
+        loadInitialData();
     }, []);
 
     const refreshIngredients = async () => {
@@ -108,68 +101,118 @@ const App = () => {
     };
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Layout>
-                <Header style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    position: 'fixed',
-                    width: '100%',
-                    zIndex: 1,
-                    backgroundColor: '#fff',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-                }}>
-                    <div className="logo" style={{ fontSize: '24px', color: '#000', marginRight: 'auto' }}>
-                        Рецепты
-                    </div>
-                    <Button
-                        className="add-recipe-button"
-                        type="default"
-                        onClick={handleAddRecipe}
-                    >
-                        Добавить рецепт
-                    </Button>
-                </Header>
-                <Content style={{ padding: '50px', marginTop: 64, background: '#fff' }}>
-                    <div style={{ padding: 24, minHeight: 280 }}>
-                        <RecipeList recipes={recipes} refreshRecipes={refreshRecipes} />
-                    </div>
-                </Content>
-            </Layout>
-
-            <Modal title="Добавить рецепт" visible={visibleAddRecipe} onCancel={handleCancelAddRecipe} onOk={submitRecipe}>
-                <Input placeholder="Название рецепта" value={newRecipeTitle} onChange={e => setNewRecipeTitle(e.target.value)} />
-                <Input.TextArea placeholder="Описание рецепта" value={newRecipeDescription} onChange={e => setNewRecipeDescription(e.target.value)} />
-                <Select
-                    mode="multiple"
-                    style={{ width: '100%' }}
-                    placeholder="Выберите ингредиенты"
-                    value={newRecipeIngredients}
-                    onChange={setNewRecipeIngredients}
+        <Layout style={{ minHeight: '100vh', background: '#f7f7f7' }}>
+            <Header style={{
+                display: 'flex',
+                alignItems: 'center',
+                position: 'fixed',
+                width: '100%',
+                zIndex: 1,
+                backgroundColor: '#fff',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+            }}>
+                <div className="logo" style={{ fontSize: '24px', color: '#58a36c', fontWeight: 'bold', marginRight: 'auto' }}>
+                    🍽️ Рецепты
+                </div>
+                <Button
+                    className="add-recipe-button"
+                    type="primary"
+                    onClick={handleAddRecipe}
+                    style={{
+                        backgroundColor: '#58a36c', // Зеленый оттенок
+                        borderColor: '#58a36c',
+                        color: 'white',  // Текст белого цвета
+                        fontWeight: 'bold',
+                        transition: 'all 0.3s ease',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Тень
+                        borderRadius: '8px',  // Округление углов
+                    }}
                 >
-                    {ingredientOptions.map(ingredient => (
-                        <Option key={ingredient.id} value={ingredient.id}>{ingredient.name}</Option>
-                    ))}
-                </Select>
-                <Select
-                    style={{ width: '100%', marginTop: '10px' }}
-                    placeholder="Выберите кухню"
-                    value={newCuisineId}
-                    onChange={setNewCuisineId}
-                >
-                    {cuisineOptions.map(cuisine => (
-                        <Option key={cuisine.id} value={cuisine.id}>{cuisine.name}</Option>
-                    ))}
-                </Select>
-                <Input
-                    placeholder="Добавить новый ингредиент"
-                    value={newIngredientName}
-                    onChange={e => setNewIngredientName(e.target.value)}
-                    onPressEnter={handleAddIngredient}
-                />
-                <Button type="primary" onClick={handleAddIngredient}>
-                    Добавить ингредиент
+                    Добавить рецепт
                 </Button>
+            </Header>
+            <Content style={{ padding: '60px 50px 50px 50px', marginTop: 64 }}>
+                <div style={{ padding: 24, minHeight: 280, background: '#fff', borderRadius: 12, boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }}>
+                    {loading ? <Spin size="large" /> : <RecipeList recipes={recipes} refreshRecipes={refreshRecipes} />}
+                </div>
+            </Content>
+
+            <Modal
+                title="Добавить рецепт"
+                open={visibleAddRecipe}
+                onCancel={handleCancelAddRecipe}
+                onOk={submitRecipe}
+                okText="Сохранить"
+                cancelText="Отмена"
+                style={{ maxWidth: '600px', padding: '20px' }} // Увеличено пространство
+                bodyStyle={{
+                    padding: '24px', // Паддинг для внутренних элементов
+                    backgroundColor: '#fff', // Сделано белым
+                    border: 'none', // Убрали лишнюю границу
+                }}
+                okButtonProps={{
+                    style: {
+                        backgroundColor: '#58a36c',
+                        borderColor: '#58a36c',
+                        color: 'white',
+                    },
+                }}
+            >
+                <div style={{ marginBottom: '16px' }}>
+                    <Input
+                        style={{ marginBottom: 10 }}
+                        placeholder="Название рецепта"
+                        value={newRecipeTitle}
+                        onChange={e => setNewRecipeTitle(e.target.value)}
+                    />
+                    <Input.TextArea
+                        style={{ marginBottom: 10 }}
+                        placeholder="Описание рецепта"
+                        value={newRecipeDescription}
+                        onChange={e => setNewRecipeDescription(e.target.value)}
+                    />
+                    <Select
+                        mode="multiple"
+                        style={{ width: '100%', marginBottom: 10 }}
+                        placeholder="Выберите ингредиенты"
+                        value={newRecipeIngredients}
+                        onChange={setNewRecipeIngredients}
+                    >
+                        {ingredientOptions.map(ingredient => (
+                            <Option key={ingredient.id} value={ingredient.id}>{ingredient.name}</Option>
+                        ))}
+                    </Select>
+                    <Select
+                        style={{ width: '100%', marginBottom: 10 }}
+                        placeholder="Выберите кухню"
+                        value={newCuisineId}
+                        onChange={setNewCuisineId}
+                    >
+                        {cuisineOptions.map(cuisine => (
+                            <Option key={cuisine.id} value={cuisine.id}>{cuisine.name}</Option>
+                        ))}
+                    </Select>
+                    <Input
+                        style={{ marginBottom: 10 }}
+                        placeholder="Добавить новый ингредиент"
+                        value={newIngredientName}
+                        onChange={e => setNewIngredientName(e.target.value)}
+                        onPressEnter={handleAddIngredient}
+                    />
+                    <Button
+                        type="primary"
+                        onClick={handleAddIngredient}
+                        block
+                        style={{
+                            backgroundColor: '#58a36c', // Зелёный цвет
+                            borderColor: '#58a36c',
+                            color: 'white',
+                            fontWeight: 'bold',
+                        }}
+                    >
+                        Добавить ингредиент
+                    </Button>
+                </div>
             </Modal>
         </Layout>
     );

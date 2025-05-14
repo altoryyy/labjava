@@ -1,15 +1,15 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/recipes';
+const API_URL = 'http://localhost:8080/api';
 
 export const fetchRecipes = async () => {
-    const response = await axios.get(API_URL);
+    const response = await axios.get(`${API_URL}/recipes`);
     return response.data;
 };
 
 export const createReview = async (reviewData) => {
     console.log('Sending review data:', reviewData);
-    const response = await fetch('http://localhost:8080/api/reviews', {
+    const response = await fetch(`${API_URL}/reviews`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ export const createReview = async (reviewData) => {
 };
 
 export const createRecipe = async (recipeData) => {
-    const response = await fetch('http://localhost:8080/api/recipes', {
+    const response = await fetch(`${API_URL}/recipes`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -38,9 +38,8 @@ export const createRecipe = async (recipeData) => {
     return await response.json();
 };
 
-
 export const fetchIngredients = async () => {
-    const response = await fetch('http://localhost:8080/api/ingredients');
+    const response = await fetch(`${API_URL}/ingredients`);
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(`Ошибка: ${errorData.message}`);
@@ -49,7 +48,7 @@ export const fetchIngredients = async () => {
 };
 
 export const fetchCuisines = async () => {
-    const response = await fetch('http://localhost:8080/api/cuisines'); // Предположим, что этот эндпоинт существует
+    const response = await fetch(`${API_URL}/cuisines`);
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(`Ошибка: ${errorData.message}`);
@@ -58,7 +57,7 @@ export const fetchCuisines = async () => {
 };
 
 export const createIngredient = async (ingredientData) => {
-    const response = await fetch('http://localhost:8080/api/ingredients', {
+    const response = await fetch(`${API_URL}/ingredients`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -69,5 +68,35 @@ export const createIngredient = async (ingredientData) => {
         const errorData = await response.json();
         throw new Error(`Ошибка: ${errorData.message}`);
     }
+    return await response.json();
+};
+
+export const deleteRecipe = async (recipeId) => {
+    const response = await fetch(`${API_URL}/recipes/${recipeId}`, {
+        method: 'DELETE',
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Ошибка при удалении рецепта: ${errorData.message}`);
+    }
+
+    return await response.json();
+};
+
+export const updateRecipe = async (recipeId, updatedRecipeData) => {
+    const response = await fetch(`${API_URL}/recipes/${recipeId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedRecipeData),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Ошибка при обновлении рецепта: ${errorData.message}`);
+    }
+
     return await response.json();
 };

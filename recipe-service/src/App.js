@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Layout, Button, Modal, Input, Select, Spin } from 'antd';
 import RecipeList from './components/RecipeList';
 import { createRecipe, fetchIngredients, fetchCuisines, createIngredient, fetchRecipes } from './api/api';
+import useDebounce from './hooks/useDebounce';
 
 const { Header, Content } = Layout;
 const { Option } = Select;
@@ -18,6 +19,10 @@ const App = () => {
     const [newIngredientName, setNewIngredientName] = useState('');
     const [recipes, setRecipes] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    const debouncedTitle = useDebounce(newRecipeTitle, 300);
+    const debouncedDescription = useDebounce(newRecipeDescription, 300);
+    const debouncedIngredientName = useDebounce(newIngredientName, 300);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -72,8 +77,8 @@ const App = () => {
 
     const submitRecipe = async () => {
         const recipeData = {
-            title: newRecipeTitle,
-            description: newRecipeDescription,
+            title: debouncedTitle,
+            description: debouncedDescription,
             ingredients: newRecipeIngredients.map(id => ({ id })),
             cuisine: { id: newCuisineId },
         };
@@ -88,9 +93,9 @@ const App = () => {
     };
 
     const handleAddIngredient = async () => {
-        if (newIngredientName) {
+        if (debouncedIngredientName) {
             try {
-                const newIngredient = await createIngredient({ name: newIngredientName });
+                const newIngredient = await createIngredient({ name: debouncedIngredientName });
                 console.log('Добавлен новый ингредиент:', newIngredient);
                 await refreshIngredients();
                 setNewIngredientName('');
@@ -101,17 +106,18 @@ const App = () => {
     };
 
     return (
-        <Layout style={{ minHeight: '100vh', background: '#f7f7f7' }}>
+        <Layout style={{ minHeight: '100vh', background: '#ffffff' }}>
             <Header style={{
                 display: 'flex',
                 alignItems: 'center',
                 position: 'fixed',
                 width: '100%',
                 zIndex: 1,
-                backgroundColor: '#fff',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                backgroundColor: '#58a36c',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                padding: '0 20px',
             }}>
-                <div className="logo" style={{ fontSize: '24px', color: '#58a36c', fontWeight: 'bold', marginRight: 'auto' }}>
+                <div className="logo" style={{ fontSize: '24px', color: '#ffffff', fontWeight: 'bold' }}>
                     🍽️ Рецепты
                 </div>
                 <Button
@@ -119,20 +125,39 @@ const App = () => {
                     type="primary"
                     onClick={handleAddRecipe}
                     style={{
-                        backgroundColor: '#58a36c', // Зеленый оттенок
-                        borderColor: '#58a36c',
-                        color: 'white',  // Текст белого цвета
+                        marginLeft: 'auto',
+                        backgroundColor: '#ffffff',
+                        borderColor: '#ffffff',
+                        color: '#58a36c',
                         fontWeight: 'bold',
+                        borderRadius: '8px',
                         transition: 'all 0.3s ease',
-                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Тень
-                        borderRadius: '8px',  // Округление углов
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                    }}
+
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#58a36c';
+                        e.currentTarget.style.color = '#ffffff';
+                        e.currentTarget.style.borderColor = '#58a36c';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#ffffff';
+                        e.currentTarget.style.color = '#58a36c';
+                        e.currentTarget.style.borderColor = '#ffffff';
                     }}
                 >
                     Добавить рецепт
                 </Button>
             </Header>
-            <Content style={{ padding: '60px 50px 50px 50px', marginTop: 64 }}>
-                <div style={{ padding: 24, minHeight: 280, background: '#fff', borderRadius: 12, boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }}>
+            <Content style={{ padding: '60px 50px 50px', marginTop: 64 }}>
+                <div style={{
+                    padding: 24,
+                    minHeight: 280,
+                        background: '#ffffff',
+                    borderRadius: 12,
+                    marginTop: '-80px'
+                    //boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                }}>
                     {loading ? <Spin size="large" /> : <RecipeList recipes={recipes} refreshRecipes={refreshRecipes} />}
                 </div>
             </Content>
@@ -144,12 +169,7 @@ const App = () => {
                 onOk={submitRecipe}
                 okText="Сохранить"
                 cancelText="Отмена"
-                style={{ maxWidth: '600px', padding: '20px' }} // Увеличено пространство
-                bodyStyle={{
-                    padding: '24px', // Паддинг для внутренних элементов
-                    backgroundColor: '#fff', // Сделано белым
-                    border: 'none', // Убрали лишнюю границу
-                }}
+                bodyStyle={{ padding: '24px', backgroundColor: '#ffffff', height: 350 }}
                 okButtonProps={{
                     style: {
                         backgroundColor: '#58a36c',
@@ -157,23 +177,28 @@ const App = () => {
                         color: 'white',
                     },
                 }}
+                cancelButtonProps={{
+                    style: {
+                        color: '#888',
+                    },
+                }}
             >
                 <div style={{ marginBottom: '16px' }}>
                     <Input
-                        style={{ marginBottom: 10 }}
+                        style={{ marginBottom: 20 }}
                         placeholder="Название рецепта"
                         value={newRecipeTitle}
                         onChange={e => setNewRecipeTitle(e.target.value)}
                     />
                     <Input.TextArea
-                        style={{ marginBottom: 10 }}
+                        style={{ marginBottom: 20 }}
                         placeholder="Описание рецепта"
                         value={newRecipeDescription}
                         onChange={e => setNewRecipeDescription(e.target.value)}
                     />
                     <Select
                         mode="multiple"
-                        style={{ width: '100%', marginBottom: 10 }}
+                        style={{ width: '100%', marginBottom: 20 }}
                         placeholder="Выберите ингредиенты"
                         value={newRecipeIngredients}
                         onChange={setNewRecipeIngredients}
@@ -183,7 +208,7 @@ const App = () => {
                         ))}
                     </Select>
                     <Select
-                        style={{ width: '100%', marginBottom: 10 }}
+                        style={{ width: '100%', marginBottom: 20 }}
                         placeholder="Выберите кухню"
                         value={newCuisineId}
                         onChange={setNewCuisineId}
@@ -193,7 +218,7 @@ const App = () => {
                         ))}
                     </Select>
                     <Input
-                        style={{ marginBottom: 10 }}
+                        style={{ marginBottom: 20 }}
                         placeholder="Добавить новый ингредиент"
                         value={newIngredientName}
                         onChange={e => setNewIngredientName(e.target.value)}
@@ -204,10 +229,11 @@ const App = () => {
                         onClick={handleAddIngredient}
                         block
                         style={{
-                            backgroundColor: '#58a36c', // Зелёный цвет
+                            backgroundColor: '#58a36c',
                             borderColor: '#58a36c',
                             color: 'white',
                             fontWeight: 'bold',
+                            borderRadius: '8px',
                         }}
                     >
                         Добавить ингредиент

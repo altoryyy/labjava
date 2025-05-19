@@ -8,95 +8,60 @@ export const fetchRecipes = async () => {
 };
 
 export const createReview = async (reviewData) => {
-    console.log('Sending review data:', reviewData);
-    const response = await fetch(`${API_URL}/reviews`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reviewData),
-    });
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Ошибка: ${errorData.message}`);
+    const response = await axios.post(`${API_URL}/reviews`, reviewData);
+    if (response.status !== 201) {
+        throw new Error(`Ошибка: ${response.data.message}`);
     }
-    return await response.json();
+    return response.data;
 };
 
 export const createRecipe = async (recipeData) => {
-    const response = await fetch(`${API_URL}/recipes`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(recipeData),
-    });
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Ошибка: ${errorData.message}`);
+    const response = await axios.post(`${API_URL}/recipes`, recipeData);
+    if (response.status !== 201) {
+        throw new Error(`Ошибка: ${response.data.message}`);
     }
-    return await response.json();
+    return response.data;
 };
 
 export const fetchIngredients = async () => {
-    const response = await fetch(`${API_URL}/ingredients`);
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Ошибка: ${errorData.message}`);
+    const response = await axios.get(`${API_URL}/ingredients`);
+    if (response.status !== 200) {
+        throw new Error(`Ошибка: ${response.data.message}`);
     }
-    return await response.json();
+    return response.data;
 };
 
 export const fetchCuisines = async () => {
-    const response = await fetch(`${API_URL}/cuisines`);
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Ошибка: ${errorData.message}`);
+    const response = await axios.get(`${API_URL}/cuisines`);
+    if (response.status !== 200) {
+        throw new Error(`Ошибка: ${response.data.message}`);
     }
-    return await response.json();
+    return response.data;
 };
 
 export const createIngredient = async (ingredientData) => {
-    const response = await fetch(`${API_URL}/ingredients`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(ingredientData),
-    });
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Ошибка: ${errorData.message}`);
+    const response = await axios.post(`${API_URL}/ingredients`, ingredientData);
+    if (response.status !== 201) {
+        throw new Error(`Ошибка: ${response.data.message}`);
     }
-    return await response.json();
+    return response.data;
 };
 
 export const deleteRecipe = async (recipeId) => {
-    const response = await fetch(`${API_URL}/recipes/${recipeId}`, {
-        method: 'DELETE',
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Ошибка при удалении рецепта: ${errorData.message}`);
+    try {
+        const response = await axios.delete(`${API_URL}/recipes/${recipeId}`);
+        console.log('Ответ от сервера:', response);
+        return response.data;
+    } catch (error) {
+        console.error('Ошибка при запросе к серверу:', error.response ? error.response.data : error);
+        throw error;
     }
-
-    return await response.json();
 };
 
 export const updateRecipe = async (recipeId, updatedRecipeData) => {
-    const response = await fetch(`${API_URL}/recipes/${recipeId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedRecipeData),
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Ошибка при обновлении рецепта: ${errorData.message}`);
+    const response = await axios.put(`${API_URL}/recipes/${recipeId}`, updatedRecipeData);
+    if (response.status !== 200) {
+        throw new Error(`Ошибка при обновлении рецепта: ${response.data.message}`);
     }
-
-    return await response.json();
+    return response.data;
 };

@@ -1,28 +1,20 @@
-services:
-  # Удалите или закомментируйте этот блок, если не используете локальную БД
-  # db:
-  #   image: postgres:latest
-  #   environment:
-  #     POSTGRES_DB: RecipeDB
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: 1234
-  #   ports:
-  #     - "5432:5432"
-  #   networks:
-  #     - my_network
+version: '3.8'
 
+services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d0hfd0a4d50c73bgkbo0-a.oregon-postgres.render.com/reipce_db
-      SPRING_DATASOURCE_USERNAME: altory
-      SPRING_DATASOURCE_PASSWORD: LYmK3QxzLF7kmf4HlbiDuXOW8a4kZgn6
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/RecipeDB
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
     ports:
       - "8080:8080"
-    networks:
-      - my_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - frontend
 
   frontend:
     build:
@@ -30,8 +22,3 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
-    networks:
-      - my_network
-
-networks:
-  my_network:

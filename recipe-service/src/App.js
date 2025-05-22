@@ -53,12 +53,12 @@ const App = () => {
         }
     };
 
-    const refreshRecipes = async () => {
-        try {
-            const recipesData = await fetchRecipes();
-            setRecipes(recipesData);
-        } catch (error) {
-            console.error('Ошибка при обновлении рецептов:', error);
+    const refreshRecipes = async (updatedRecipes) => {
+        if (updatedRecipes) {
+            setRecipes(updatedRecipes); // Полная замена списка
+        } else {
+            const freshRecipes = await fetchRecipes(); // Получаем свежие данные
+            setRecipes(freshRecipes);
         }
     };
 
@@ -156,20 +156,31 @@ const App = () => {
                         background: '#ffffff',
                     borderRadius: 12,
                     marginTop: '-80px'
-                    //boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
                 }}>
                     {loading ? <Spin size="large" /> : <RecipeList recipes={recipes} refreshRecipes={refreshRecipes} />}
                 </div>
             </Content>
 
             <Modal
-                title="Добавить рецепт"
+                title={
+                    <div>
+                        <div>Добавить рецепт</div>
+                        <div style={{
+                            fontSize: 12,
+                            color: '#888',
+                            fontWeight: 'normal',
+                            marginTop: 4
+                        }}>
+                            * - обязательные поля
+                        </div>
+                    </div>
+                }
                 open={visibleAddRecipe}
                 onCancel={handleCancelAddRecipe}
                 onOk={submitRecipe}
                 okText="Сохранить"
                 cancelText="Отмена"
-                bodyStyle={{ padding: '24px', backgroundColor: '#ffffff', height: 350 }}
+                bodyStyle={{ padding: '24px', backgroundColor: '#ffffff'}}
                 okButtonProps={{
                     style: {
                         backgroundColor: '#58a36c',
@@ -186,20 +197,20 @@ const App = () => {
                 <div style={{ marginBottom: '16px' }}>
                     <Input
                         style={{ marginBottom: 20 }}
-                        placeholder="Название рецепта"
+                        placeholder="Название рецепта *"
                         value={newRecipeTitle}
                         onChange={e => setNewRecipeTitle(e.target.value)}
                     />
                     <Input.TextArea
                         style={{ marginBottom: 20 }}
-                        placeholder="Описание рецепта"
+                        placeholder="Описание рецепта *"
                         value={newRecipeDescription}
                         onChange={e => setNewRecipeDescription(e.target.value)}
                     />
                     <Select
                         mode="multiple"
                         style={{ width: '100%', marginBottom: 20 }}
-                        placeholder="Выберите ингредиенты"
+                        placeholder="Выберите ингредиенты *"
                         value={newRecipeIngredients}
                         onChange={setNewRecipeIngredients}
                     >
@@ -209,7 +220,7 @@ const App = () => {
                     </Select>
                     <Select
                         style={{ width: '100%', marginBottom: 20 }}
-                        placeholder="Выберите кухню"
+                        placeholder="Выберите кухню *"
                         value={newCuisineId}
                         onChange={setNewCuisineId}
                     >

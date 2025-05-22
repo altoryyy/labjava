@@ -101,9 +101,11 @@ public class ReviewController {
     @PutMapping("/{id}")
     public Review updateReview(@PathVariable Long id, @RequestBody Review review) {
         visitCounter.incrementVisit("/api/reviews/" + id);
+
         if (review == null || review.getText() == null) {
             throw new CustomException("Содержимое отзыва не может быть пустым");
         }
+
         return reviewService.updateReview(id, review);
     }
 
@@ -117,4 +119,16 @@ public class ReviewController {
     public void deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);
     }
+
+    @Operation(summary = "Получить отзывы по ID рецепта",
+            description = "Возвращает список всех отзывов для указанного рецепта.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Отзывы найдены"),
+        @ApiResponse(responseCode = "404", description = "Рецепт не найден")
+    })
+    @GetMapping("/recipe/{recipeId}")
+    public List<ReviewDto> getReviewsByRecipeId(@PathVariable Long recipeId) {
+        return reviewService.getReviewsByRecipeId(recipeId);
+    }
 }
+

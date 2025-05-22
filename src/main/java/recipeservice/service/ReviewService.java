@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import recipeservice.dao.ReviewDao;
 import recipeservice.dto.ReviewDto;
 import recipeservice.model.Review;
+import recipeservice.exception.CustomException;
 
 @Service
 public class ReviewService {
@@ -42,12 +43,28 @@ public class ReviewService {
     }
 
     public Review updateReview(Long id, Review review) {
-        return reviewDao.updateReview(id, review);
+        Review existingReview = reviewDao.updateReview(id, review);
+        if (existingReview == null) {
+            throw new CustomException("Отзыв не найден для обновления");
+        }
+        return existingReview;
     }
 
     public void deleteReview(Long id) {
         reviewDao.deleteReview(id);
     }
+
+    public List<ReviewDto> getReviewsByRecipeId(Long recipeId) {
+        List<Review> reviews = reviewDao.getReviewsByRecipeId(recipeId);
+        return reviews.stream()
+                .map(review -> new ReviewDto(
+                        review.getId(),
+                        review.getText(),
+                        review.getRating(),
+                        review.getRecipe().getId()))
+                .toList();
+    }
 }
+
 
 // /Library/PostgreSQL/17/bin/postgres -D /Library/PostgreSQL/17/data

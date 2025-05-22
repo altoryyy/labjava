@@ -13,4 +13,6 @@ public interface ReviewDao {
     Review updateReview(Long id, Review review);
 
     void deleteReview(Long id);
+
+    List<Review> getReviewsByRecipeId(Long recipeId);
 }
